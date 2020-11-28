@@ -1,7 +1,8 @@
 import dayjs from "dayjs";
+import {createElement} from "../utils.js";
 
-export const createRouteAndPrice = (waypoint) => {
-  const {startEvent, endEvent} = waypoint;
+const createRouteAndPrice = (data) => {
+  const {startEvent, endEvent} = data;
   return `
   <section class="trip-main__trip-info  trip-info">
             <div class="trip-info__main">
@@ -16,3 +17,27 @@ export const createRouteAndPrice = (waypoint) => {
   </section>
   `;
 };
+
+export default class RouteAndPrice {
+  constructor(data) {
+    this._element = null;
+    this._data = data;
+  }
+
+  getTemplate() {
+    return createRouteAndPrice(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+

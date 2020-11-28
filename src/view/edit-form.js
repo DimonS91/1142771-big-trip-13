@@ -1,7 +1,8 @@
 import dayjs from "dayjs";
+import {createElement} from "../utils.js";
 
-export const createEditForm = (waypoint) => {
-  const {point, city, description, startEvent, endEvent, price} = waypoint;
+const createEditForm = (data) => {
+  const {point, city, description, startEvent, endEvent, price} = data;
   return `
   <li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -165,3 +166,26 @@ export const createEditForm = (waypoint) => {
             </li>
   `;
 };
+
+export default class EditForm {
+  constructor(data) {
+    this._element = null;
+    this._data = data;
+  }
+
+  getTemplate() {
+    return createEditForm(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
