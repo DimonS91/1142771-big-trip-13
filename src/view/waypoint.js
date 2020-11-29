@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
+import {createElement} from "../utils";
 
-export const createWaypoints = (waypoint) => {
+const createWaypoints = (waypoint) => {
   const {point, city, price, startEvent, endEvent} = waypoint;
   const timeDiff = dayjs(endEvent).toDate() - dayjs(startEvent).toDate();
   return `
@@ -43,3 +44,26 @@ export const createWaypoints = (waypoint) => {
   </li>
   `;
 };
+
+export default class Waypoints {
+  constructor(waypoints) {
+    this._waypoints = waypoints;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createWaypoints(this._waypoints);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
