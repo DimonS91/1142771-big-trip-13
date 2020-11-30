@@ -38,9 +38,14 @@ const renderEvent = (eventListElement, point) => {
     }
   };
 
+
   eventComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
     replacePointToEditPoint();
     document.addEventListener(`keydown`, onEscKeyDown);
+  });
+
+  eventEditComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+    replaceEditPointToPoint();
   });
 
   eventEditComponent.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
