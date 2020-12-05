@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 const createRouteAndPrice = (data) => {
   const {startEvent, endEvent} = data;
@@ -18,26 +18,14 @@ const createRouteAndPrice = (data) => {
   `;
 };
 
-export default class RouteAndPrice {
+export default class RouteAndPrice extends AbstractView {
   constructor(data) {
-    this._element = null;
+    super();
     this._data = data;
   }
 
   getTemplate() {
     return createRouteAndPrice(this._data);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 
