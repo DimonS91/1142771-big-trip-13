@@ -10,7 +10,13 @@ import EditFormView from './view/edit-form';
 import {data} from './mock/mock';
 import {render, RenderPosition, replace} from "./utils/render.js";
 
-const WAYPOINTS_COUNT = 15;
+export let totalPrice = 0;
+
+data.map((el) => {
+  return el.price;
+}).forEach((el) => {
+  totalPrice += el;
+});
 
 const pageMain = document.querySelector(`main`);
 const tripMain = document.querySelector(`.trip-main`);
@@ -56,15 +62,21 @@ const renderEvent = (eventListElement, point) => {
   render(eventListElement, eventComponent, RenderPosition.BEFOREEND);
 };
 
-render(tripMain, new RouteAndPriceView(data[0]), RenderPosition.AFTERBEGIN);
+export const uniqueCity = [...new Set(data.map((elem) => elem.city))];
+
+render(tripMain, new RouteAndPriceView(data[1]), RenderPosition.AFTERBEGIN);
 render(tripControls, new AppMenuView(), RenderPosition.AFTERBEGIN);
 render(tripControls, new FilterView(), RenderPosition.BEFOREEND);
 render(tripEvents, pointsListComponent, RenderPosition.AFTERBEGIN);
 render(tripEvents, new SortFormView(), RenderPosition.AFTERBEGIN);
 
-for (let i = 0; i < WAYPOINTS_COUNT; i++) {
-  renderEvent(pointsListComponent, data[i]);
-}
-if (WAYPOINTS_COUNT === 0) {
-  render(tripEvents, new EmptyListView(), RenderPosition.BEFOREEND);
-}
+const renderPoints = (points) => {
+  if (points.length === 0) {
+    render(tripEvents, new EmptyListView(), RenderPosition.BEFOREEND);
+  } else {
+    points.forEach((arr) => {
+      renderEvent(pointsListComponent, arr);
+    });
+  }
+};
+renderPoints(data);
