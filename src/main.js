@@ -8,9 +8,15 @@ import WaypointsView from './view/waypoint';
 import EditFormView from './view/edit-form';
 // import {createNewForm} from './view/create-form';
 import {data} from './mock/mock';
-import {render, RenderPosition} from "./utils";
+import {render, RenderPosition, replace} from "./utils/render.js";
 
-const WAYPOINTS_COUNT = 15;
+export let totalPrice = 0;
+
+data.map((el) => {
+  return el.price;
+}).forEach((el) => {
+  totalPrice += el;
+});
 
 const pageMain = document.querySelector(`main`);
 const tripMain = document.querySelector(`.trip-main`);
@@ -23,11 +29,11 @@ const renderEvent = (eventListElement, point) => {
   const eventEditComponent = new EditFormView(point);
 
   const replacePointToEditPoint = () => {
-    eventListElement.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+    replace(eventEditComponent, eventComponent);
   };
 
   const replaceEditPointToPoint = () => {
-    eventListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+    replace(eventComponent, eventEditComponent);
   };
 
   const onEscKeyDown = (evt) => {
@@ -39,33 +45,38 @@ const renderEvent = (eventListElement, point) => {
   };
 
 
-  eventComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+  eventComponent.setEditClickHandler(() => {
     replacePointToEditPoint();
     document.addEventListener(`keydown`, onEscKeyDown);
   });
 
-  eventEditComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+  eventEditComponent.setEditClickHandler(() => {
     replaceEditPointToPoint();
   });
 
-  eventEditComponent.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
-    evt.preventDefault();
+  eventEditComponent.setFormSubmitHandler(() => {
     replaceEditPointToPoint();
     document.removeEventListener(`keydown`, onEscKeyDown);
   });
 
-  render(eventListElement, eventComponent.getElement(), RenderPosition.BEFOREEND);
+  render(eventListElement, eventComponent, RenderPosition.BEFOREEND);
 };
 
-render(tripMain, new RouteAndPriceView(data[0]).getElement(), RenderPosition.AFTERBEGIN);
-render(tripControls, new AppMenuView().getElement(), RenderPosition.AFTERBEGIN);
-render(tripControls, new FilterView().getElement(), RenderPosition.BEFOREEND);
-render(tripEvents, pointsListComponent.getElement(), RenderPosition.AFTERBEGIN);
-render(tripEvents, new SortFormView().getElement(), RenderPosition.AFTERBEGIN);
+export const uniqueCity = [...new Set(data.map((elem) => elem.city))];
 
-for (let i = 0; i < WAYPOINTS_COUNT; i++) {
-  renderEvent(pointsListComponent.getElement(), data[i]);
-}
-if (WAYPOINTS_COUNT === 0) {
-  render(tripEvents, new EmptyListView().getElement(), RenderPosition.BEFOREEND);
-}
+render(tripMain, new RouteAndPriceView(data[1]), RenderPosition.AFTERBEGIN);
+render(tripControls, new AppMenuView(), RenderPosition.AFTERBEGIN);
+render(tripControls, new FilterView(), RenderPosition.BEFOREEND);
+render(tripEvents, pointsListComponent, RenderPosition.AFTERBEGIN);
+render(tripEvents, new SortFormView(), RenderPosition.AFTERBEGIN);
+
+const renderPoints = (points) => {
+  if (points.length === 0) {
+    render(tripEvents, new EmptyListView(), RenderPosition.BEFOREEND);
+  } else {
+    points.forEach((arr) => {
+      renderEvent(pointsListComponent, arr);
+    });
+  }
+};
+renderPoints(data);

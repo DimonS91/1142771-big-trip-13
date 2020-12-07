@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 const createSortForm = () => {
   return `
@@ -31,24 +31,8 @@ const createSortForm = () => {
   `;
 };
 
-export default class SortForm {
-  constructor() {
-    this._element = null;
-  }
-
+export default class SortForm extends AbstractView {
   getTemplate() {
     return createSortForm();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

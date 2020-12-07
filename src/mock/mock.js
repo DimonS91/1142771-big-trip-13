@@ -1,4 +1,4 @@
-const getRandomInteger = (min, max) => {
+export const getRandomInteger = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
@@ -29,7 +29,7 @@ const generateRandomCity = () => {
     `Amsterdam`,
     `Chamonix`,
     `Geneva`,
-    `San Francisco`
+    `Los Angeles`
   ];
 
   const randomIndex = getRandomInteger(0, city.length - 1);
