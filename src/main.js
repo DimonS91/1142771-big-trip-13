@@ -1,16 +1,18 @@
 import {data} from './mock/mock';
-import PointPresenter from "./presenter/trip.js";
-
-export let totalPrice = data.reduce((cur, acc) => {
-  return cur + acc.price;
-}, 0);
+import TripPresenter from './presenter/trip.js';
+import AppMenuView from './view/menu.js';
+import FilterView from './view/filters.js';
+import RouteAndPriceView from './view/route-and-price.js';
+import {render, RenderPosition} from './utils/render.js';
 
 const tripMain = document.querySelector(`.trip-main`);
 const tripControls = document.querySelector(`.trip-controls`);
 const tripEvents = document.querySelector(`.trip-events`);
 
-export const uniqueCity = [...new Set(data.map((elem) => elem.city))];
+render(tripControls, new AppMenuView(), RenderPosition.AFTERBEGIN);
+render(tripControls, new FilterView(), RenderPosition.BEFOREEND);
+render(tripMain, new RouteAndPriceView(data), RenderPosition.AFTERBEGIN);
 
-const pointPresenter = new PointPresenter(tripEvents, tripControls, tripMain);
+const pointPresenter = new TripPresenter(tripEvents);
 
 pointPresenter.init(data);

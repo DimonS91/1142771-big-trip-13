@@ -1,10 +1,15 @@
 import dayjs from "dayjs";
 import AbstractView from "./abstract.js";
-import {totalPrice, uniqueCity} from "../main.js";
-
 
 const createRouteAndPrice = (data) => {
   const {startEvent, endEvent} = data;
+
+  const totalPrice = data.reduce((cur, acc) => {
+    return cur + acc.price;
+  }, 0);
+
+  const uniqueCity = [...new Set(data.map((elem) => elem.city))];
+
   return `
   <section class="trip-main__trip-info  trip-info">
              <div class="trip-info__main">

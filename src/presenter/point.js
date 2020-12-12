@@ -9,6 +9,8 @@ const Mode = {
 
 export default class Point {
   constructor(pointListContainer, changeData, changeMode) {
+    this._data = null;
+
     this._pointListContainer = pointListContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
