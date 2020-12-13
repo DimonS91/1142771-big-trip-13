@@ -6,6 +6,22 @@ const gerRandomElements = (arr) => {
   return arr.filter(() => Math.random() >= 0.5);
 };
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
+export const updateItem = (items, update) => {
+  const index = items.findIndex((item) => item.id === update.id);
+
+  if (index === -1) {
+    return items;
+  }
+
+  return [
+    ...items.slice(0, index),
+    update,
+    ...items.slice(index + 1)
+  ];
+};
+
 const generateRandomPoints = () => {
   const poits = [
     `Taxi`,
@@ -101,6 +117,7 @@ const generateData = () => {
   const startEvent = generateDate();
   const endEvent = generateDate();
   return {
+    id: generateId(),
     point: generateRandomPoints(),
     city: generateRandomCity(),
     offer: generateOffers(),
@@ -108,7 +125,8 @@ const generateData = () => {
     endEvent: Math.max(startEvent, endEvent),
     price: getRandomInteger(5, 100),
     description: generateDescriptions(),
-    photos: Array(3).fill().map(generatePhotos)
+    photos: Array(3).fill().map(generatePhotos),
+    isFavorite: getRandomInteger(0, 1)
   };
 };
 const createData = (count) => {
