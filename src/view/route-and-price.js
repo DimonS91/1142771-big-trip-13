@@ -3,7 +3,6 @@ import AbstractView from "./abstract.js";
 
 const createRouteAndPrice = (data) => {
   const {startEvent, endEvent} = data;
-
   const totalPrice = data.reduce((cur, acc) => {
     return cur + acc.price;
   }, 0);
