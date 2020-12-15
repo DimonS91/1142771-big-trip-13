@@ -2,7 +2,7 @@ import SortFormView from '../view/sort.js';
 import EmptyListView from '../view/list-empty.js';
 import PointsListView from '../view/list-points.js';
 import PointPresenter from './point.js';
-import {updateItem} from '../mock/mock.js';
+import {updateItem} from '../utils/util.js';
 import {render, RenderPosition} from "../utils/render.js";
 import {SortType, sortEventTime, sortEventPrice, sortEventDay} from '../view/sort.js';
 
