@@ -9,6 +9,7 @@ import {SortType, sortEventTime, sortEventPrice, sortEventDay} from '../view/sor
 export default class Trip {
   constructor(pointContainer) {
     this._data = null;
+    this._sourcedTripData = null;
     this._pointContainer = pointContainer;
     this._tripPresenter = {};
     this._currentSortType = SortType.DAY;
