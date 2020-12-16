@@ -1,9 +1,11 @@
 import dayjs from "dayjs";
 import AbstractView from "./abstract.js";
+import {getTime} from '../utils/time.js';
 
 const createWaypoints = (data) => {
   const {point, city, price, startEvent, endEvent} = data;
-  const timeDiff = dayjs(endEvent).toDate() - dayjs(startEvent).toDate();
+  const utc = require(`dayjs/plugin/utc`);
+  dayjs.extend(utc);
   return `
   <li class="trip-events__item">
     <div class="event">
@@ -14,11 +16,11 @@ const createWaypoints = (data) => {
       <h3 class="event__title">${point} ${city}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="2019-03-18T10:30">${dayjs(startEvent).format(`HH:mm`).toString()}</time>
+          <time class="event__start-time" datetime="2019-03-18T10:30">${dayjs(startEvent).format(`HH:mm`)}</time>
           &mdash;
           <time class="event__end-time" datetime="2019-03-18T11:00">${dayjs(endEvent).format(`HH:mm`)}</time>
         </p>
-        <p class="event__duration">${dayjs(timeDiff).format(`HH mm`)}M</p>
+        <p class="event__duration">${getTime(startEvent, endEvent)}</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${price}</span>

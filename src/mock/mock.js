@@ -1,26 +1,5 @@
-export const getRandomInteger = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-};
-
-const gerRandomElements = (arr) => {
-  return arr.filter(() => Math.random() >= 0.5);
-};
-
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
-
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1)
-  ];
-};
+import {getRandomInteger, getRandomElements, generateId} from '../utils/util.js';
+import {generateDate} from '../utils/time.js';
 
 const generateRandomPoints = () => {
   const poits = [
@@ -81,7 +60,7 @@ const generateOffers = () => {
     }
   ];
 
-  const getRandomOffers = gerRandomElements(offers);
+  const getRandomOffers = getRandomElements(offers);
   return getRandomOffers;
 };
 
@@ -105,12 +84,6 @@ const generateDescriptions = () => {
   const descriptionSort = description.sort(() => Math.random() - 0.5);
   const result = descriptionSort.slice(0, getRandomInteger(1, 5)).join(``);
   return result;
-};
-
-const generateDate = () => {
-  return (
-    Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * getRandomInteger(0, 60) * 60 * 1000
-  );
 };
 
 const generateData = () => {
