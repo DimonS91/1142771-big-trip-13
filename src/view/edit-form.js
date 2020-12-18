@@ -1,8 +1,31 @@
 import dayjs from "dayjs";
-import AbstractView from "./abstract.js";
+import SmartView from "../view/smart.js";
+import {pointUpdate} from '../mock/trip-update.js';
+import {generateDescriptions, generatePhotos} from '../mock/mock.js';
 
 const createEditForm = (data) => {
-  const {point, city, description, startEvent, endEvent, price} = data;
+  const {point, city, description, startEvent, endEvent, price, offer, photos} = data;
+
+  const renderOffers = offer.map(({title, price, isChecked}) => {
+    return `
+    <div class="event__offer-selector">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${isChecked ? `checked` : ``}>
+    <label class="event__offer-label" for="event-offer-${title}">
+      <span class="event__offer-title">${title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${price}</span>
+    </label>
+  </div>`;
+  }).join(``);
+
+  const renderPhotos = (imageArr) => {
+    return `<div class="event__photos-container">
+    <div class="event__photos-tape">
+    ${imageArr.map((img) => `<img class="event__photo" src="${img}" alt="Event photo">`)}
+    </div>
+  </div>`;
+  };
+
   return `
   <li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -10,7 +33,7 @@ const createEditForm = (data) => {
                   <div class="event__type-wrapper">
                     <label class="event__type  event__type-btn" for="event-type-toggle-1">
                       <span class="visually-hidden">Choose event type</span>
-                      <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+                      <img class="event__type-icon" width="17" height="17" src="img/icons/${point}.png" alt="Event type icon">
                     </label>
                     <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -108,58 +131,15 @@ const createEditForm = (data) => {
                 <section class="event__details">
                   <section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
                     <div class="event__available-offers">
-                      <div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-                        <label class="event__offer-label" for="event-offer-luggage-1">
-                          <span class="event__offer-title">Add luggage</span>
-                          &plus;&euro;&nbsp;
-                          <span class="event__offer-price">50</span>
-                        </label>
-                      </div>
-
-                      <div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="event-offer-comfort" checked>
-                        <label class="event__offer-label" for="event-offer-comfort-1">
-                          <span class="event__offer-title">Switch to comfort</span>
-                          &plus;&euro;&nbsp;
-                          <span class="event__offer-price">80</span>
-                        </label>
-                      </div>
-
-                      <div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-meal-1" type="checkbox" name="event-offer-meal">
-                        <label class="event__offer-label" for="event-offer-meal-1">
-                          <span class="event__offer-title">Add meal</span>
-                          &plus;&euro;&nbsp;
-                          <span class="event__offer-price">15</span>
-                        </label>
-                      </div>
-
-                      <div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-seats-1" type="checkbox" name="event-offer-seats">
-                        <label class="event__offer-label" for="event-offer-seats-1">
-                          <span class="event__offer-title">Choose seats</span>
-                          &plus;&euro;&nbsp;
-                          <span class="event__offer-price">5</span>
-                        </label>
-                      </div>
-
-                      <div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-train-1" type="checkbox" name="event-offer-train">
-                        <label class="event__offer-label" for="event-offer-train-1">
-                          <span class="event__offer-title">Travel by train</span>
-                          &plus;&euro;&nbsp;
-                          <span class="event__offer-price">40</span>
-                        </label>
-                      </div>
+                      ${renderOffers}
                     </div>
                   </section>
 
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                     <p class="event__destination-description">${description}</p>
+                    ${renderPhotos(photos)}
                   </section>
                 </section>
               </form>
@@ -167,20 +147,71 @@ const createEditForm = (data) => {
   `;
 };
 
-export default class EditForm extends AbstractView {
+export default class EditForm extends SmartView {
   constructor(data) {
     super();
     this._data = data;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+
+    this._typeToggleHandler = this._typeToggleHandler.bind(this);
+    this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
+    this.__priceChangeHandler = this._priceChangeHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createEditForm(this._data);
+    return createEditForm(EditForm.parseEventToData(this._data));
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector(`.event__type-group`)
+      .addEventListener(`click`, this._typeToggleHandler);
+
+    this.getElement()
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`change`, this._destinationToggleHandler);
+
+    this.getElement()
+      .querySelector(`.event__input--price`)
+      .addEventListener(`change`, this._priceChangeHandler);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  }
+
+  _typeToggleHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      point: evt.target.textContent,
+      offer: pointUpdate[evt.target.textContent]
+    });
+  }
+
+
+  _destinationToggleHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      city: evt.target.value,
+      description: generateDescriptions(),
+      photos: Array(5).fill().map(generatePhotos)
+    });
+  }
+
+  _priceChangeHandler(evt) {
+    evt.preventDefault();
+    this.updateData(
+        {
+          price: evt.target.value,
+        }, true);
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit(this._data);
+    this._callback.formSubmit(EditForm.parseDataToEvent(this._data));
   }
 
   setFormSubmitHandler(callback) {
@@ -191,5 +222,25 @@ export default class EditForm extends AbstractView {
   setEditClickHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._formSubmitHandler);
+  }
+
+  static parseEventToData(data) {
+    return Object.assign(
+        {},
+        data,
+        {
+          isOffers: data.offer.length > 0,
+          isPhotos: data.photos.length > 0
+        }
+    );
+  }
+
+  static parseDataToEvent(data) {
+    data = Object.assign({}, data);
+
+    delete data.isOffers;
+    delete data.isPhotos;
+
+    return data;
   }
 }
