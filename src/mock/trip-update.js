@@ -1,6 +1,7 @@
 import {getRandomInteger} from '../utils/util.js';
+import {generatePhotos, generateDescriptions} from './mock.js';
 
-export const pointUpdate = {
+export const typeUpdate = {
   'Taxi': [
     {
       title: `switch-to-comfort-class`,
@@ -129,4 +130,39 @@ export const pointUpdate = {
       price: getRandomInteger(0, 100)
     }
   ]
+};
+
+export const pointsUpdate = [
+  `Taxi`,
+  `Bus`,
+  `Train`,
+  `Ship`,
+  `Transport`,
+  `Drive`,
+  `Flight`,
+  `Check-in`,
+  `Sightseeing`,
+  `Restaurant`
+];
+
+export const cityUpdate = {
+  'Amsterdam': [
+    {
+      photos: Array(4).fill().map(generatePhotos),
+      description: generateDescriptions()
+    }
+  ],
+  'Chamonix': [
+    {
+      photos: Array(5).fill().map(generatePhotos),
+      description: generateDescriptions()
+    }
+  ],
+  'Geneva': [
+    {
+      photos: Array(3).fill().map(generatePhotos),
+      description: generateDescriptions()
+    }
+  ],
+
 };

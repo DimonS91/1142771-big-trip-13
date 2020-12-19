@@ -1,7 +1,6 @@
 import dayjs from "dayjs";
 import SmartView from "../view/smart.js";
-import {pointUpdate} from '../mock/trip-update.js';
-import {generateDescriptions, generatePhotos} from '../mock/mock.js';
+import {typeUpdate, pointsUpdate, cityUpdate} from '../mock/trip-update.js';
 
 const createEditForm = (data) => {
   const {point, city, description, startEvent, endEvent, price, offer, photos} = data;
@@ -9,8 +8,8 @@ const createEditForm = (data) => {
   const renderOffers = offer.map(({title, price, isChecked}) => {
     return `
     <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${isChecked ? `checked` : ``}>
-    <label class="event__offer-label" for="event-offer-${title}">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}-1" type="checkbox" name="event-offer-luggage" ${isChecked ? `checked` : ``}>
+    <label class="event__offer-label" for="event-offer-${title}-1">
       <span class="event__offer-title">${title}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${price}</span>
@@ -24,6 +23,15 @@ const createEditForm = (data) => {
     ${imageArr.map((img) => `<img class="event__photo" src="${img}" alt="Event photo">`)}
     </div>
   </div>`;
+  };
+
+  const renderEventPoint = (type, isChecked) => {
+    return `
+    <div class="event__type-item">
+        <input id="event-type-${type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.toLowerCase()}" ${isChecked ? ` checked` : ``}>
+        <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.toLowerCase()}-1">${type}</label>
+      </div>`
+    ;
   };
 
   return `
@@ -40,56 +48,7 @@ const createEditForm = (data) => {
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-
-                        <div class="event__type-item">
-                          <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                          <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                          <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                          <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                          <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-                          <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                          <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                          <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                          <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                          <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                          <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-                        </div>
+                        ${pointsUpdate.map((actualPoint) => renderEventPoint(actualPoint, point === actualPoint)).join(``)}
                       </fieldset>
                     </div>
                   </div>
@@ -155,7 +114,7 @@ export default class EditForm extends SmartView {
 
     this._typeToggleHandler = this._typeToggleHandler.bind(this);
     this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
-    this.__priceChangeHandler = this._priceChangeHandler.bind(this);
+    this._priceChangeHandler = this._priceChangeHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -181,13 +140,14 @@ export default class EditForm extends SmartView {
   restoreHandlers() {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setEditClickHandler(this._callback.editClick);
   }
 
   _typeToggleHandler(evt) {
     evt.preventDefault();
     this.updateData({
       point: evt.target.textContent,
-      offer: pointUpdate[evt.target.textContent]
+      offer: typeUpdate[evt.target.textContent]
     });
   }
 
@@ -196,8 +156,8 @@ export default class EditForm extends SmartView {
     evt.preventDefault();
     this.updateData({
       city: evt.target.value,
-      description: generateDescriptions(),
-      photos: Array(5).fill().map(generatePhotos)
+      photos: cityUpdate[evt.target.value][0].photos,
+      description: cityUpdate[evt.target.value][0].description
     });
   }
 
@@ -220,8 +180,9 @@ export default class EditForm extends SmartView {
   }
 
   setEditClickHandler(callback) {
-    this._callback.formSubmit = callback;
+    this._callback.editClick = callback;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._formSubmitHandler);
+
   }
 
   static parseEventToData(data) {

@@ -4,16 +4,16 @@ import {generateDate} from '../utils/time.js';
 
 const generateRandomPoints = () => {
   const points = [
-    `taxi`,
-    `bus`,
-    `train`,
-    `ship`,
-    `transport`,
-    `drive`,
-    `flight`,
-    `check-in`,
-    `sightseeing`,
-    `restaurant`
+    `Taxi`,
+    `Bus`,
+    `Train`,
+    `Ship`,
+    `Transport`,
+    `Drive`,
+    `Flight`,
+    `Check-in`,
+    `Sightseeing`,
+    `Restaurant`
   ];
 
   const randomIndex = getRandomInteger(0, points.length - 1);
@@ -23,8 +23,7 @@ const generateRandomPoints = () => {
 export const createCity = [
   `Amsterdam`,
   `Chamonix`,
-  `Geneva`,
-  `Los Angeles`
+  `Geneva`
 ];
 
 const generateRandomCity = () => {
