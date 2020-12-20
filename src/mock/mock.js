@@ -1,8 +1,9 @@
 import {getRandomInteger, getRandomElements, generateId} from '../utils/util.js';
 import {generateDate} from '../utils/time.js';
 
+
 const generateRandomPoints = () => {
-  const poits = [
+  const points = [
     `Taxi`,
     `Bus`,
     `Train`,
@@ -11,52 +12,51 @@ const generateRandomPoints = () => {
     `Drive`,
     `Flight`,
     `Check-in`,
-    `Sightseeng`,
+    `Sightseeing`,
     `Restaurant`
   ];
 
-  const randomIndex = getRandomInteger(0, poits.length - 1);
-  return poits[randomIndex];
+  const randomIndex = getRandomInteger(0, points.length - 1);
+  return points[randomIndex];
 };
+
+export const createCity = [
+  `Amsterdam`,
+  `Chamonix`,
+  `Geneva`
+];
 
 const generateRandomCity = () => {
-  const city = [
-    `Amsterdam`,
-    `Chamonix`,
-    `Geneva`,
-    `Los Angeles`
-  ];
-
-  const randomIndex = getRandomInteger(0, city.length - 1);
-  return city[randomIndex];
+  const randomIndex = getRandomInteger(0, createCity.length - 1);
+  return createCity[randomIndex];
 };
 
-const generateOffers = () => {
+export const generateOffers = () => {
   const offers = [
     {
       title: `Add luggage`,
       price: 50,
-      isChecked: false
+      isChecked: Boolean(getRandomInteger(0, 1))
     },
     {
       title: `Switch to comfort class`,
       price: 100,
-      isChecked: false
+      isChecked: Boolean(getRandomInteger(0, 1))
     },
     {
       title: `Add meal`,
       price: 150,
-      isChecked: false
+      isChecked: Boolean(getRandomInteger(0, 1))
     },
     {
       title: `Choose seats`,
       price: 110,
-      isChecked: false
+      isChecked: Boolean(getRandomInteger(0, 1))
     },
     {
       title: `Travel by train`,
       price: 80,
-      isChecked: false
+      isChecked: Boolean(getRandomInteger(0, 1))
     }
   ];
 
@@ -64,9 +64,9 @@ const generateOffers = () => {
   return getRandomOffers;
 };
 
-const generatePhotos = () => `http://picsum.photos/248/152?r=${Math.random()}`;
+export const generatePhotos = () => `http://picsum.photos/248/152?r=${Math.random()}`;
 
-const generateDescriptions = () => {
+export const generateDescriptions = () => {
   const description = [
     `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
     `Cras aliquet varius magna, non porta ligula feugiat eget.`,
@@ -98,7 +98,7 @@ const generateData = () => {
     endEvent: Math.max(startEvent, endEvent),
     price: getRandomInteger(5, 100),
     description: generateDescriptions(),
-    photos: Array(3).fill().map(generatePhotos),
+    photos: Array(5).fill().map(generatePhotos),
     isFavorite: getRandomInteger(0, 1)
   };
 };
