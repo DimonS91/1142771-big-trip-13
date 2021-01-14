@@ -8,16 +8,25 @@ export const getRandomElements = (arr) => {
 
 export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
+export const UserAction = {
+  UPDATE_POINT: `UPDATE_POINT`,
+  ADD_POINT: `ADD_POINT`,
+  DELETE_POINT: `DELETE_POINT`
+};
 
-  if (index === -1) {
-    return items;
-  }
+export const UpdateType = {
+  PATCH: `PATCH`,
+  MINOR: `MINOR`,
+  MAJOR: `MAJOR`
+};
 
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1)
-  ];
+export const FilterType = {
+  EVERYTHING: `everything`,
+  FUTURE: `future`,
+  PAST: `past`
+};
+
+export const MenuButtons = {
+  TABLE: `TABLE`,
+  STATS: `STATS`,
 };

@@ -1,5 +1,7 @@
 import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
 import {getRandomInteger} from './util.js';
+dayjs.extend(duration);
 
 export const generateDate = () => {
   return (
@@ -8,12 +10,21 @@ export const generateDate = () => {
 };
 
 export const getTime = (start, end) => {
-  const timeDiff = dayjs(end).diff(dayjs(start));
-  if (dayjs(timeDiff).format(`DD`) > 0) {
-    return dayjs(timeDiff).utc().format(`DD[D]:HH[H]:mm[M]`);
-  } else if (dayjs(timeDiff).format(`DD`) === 0 && dayjs(timeDiff).format(`HH`) > 0) {
-    return dayjs(timeDiff).utc().format(`HH[H]:mm[M]`);
-  } else {
-    return dayjs().utc().format(`mm[M]`);
-  }
+  const diff = dayjs(end).diff(dayjs(start));
+  const days = dayjs.duration(diff).days().toString();
+  const hours = dayjs.duration(diff).hours().toString();
+  const minutes = dayjs.duration(diff).minutes().toString();
+  return `${days > 0 ? days + `D` : ``} ${hours > 0 ? hours + `H` : ``} ${minutes}M`;
+};
+
+export const isDatesEqual = (dateA, dateB) => {
+  return (dateA === null && dateB === null) ? true : dayjs(dateA).isSame(dateB, `D`);
+};
+
+export const isEventPast = (date) => {
+  return dayjs(date).diff(dayjs()) < 0;
+};
+
+export const isEventFuture = (date) => {
+  return dayjs(date).diff(dayjs()) >= 0;
 };

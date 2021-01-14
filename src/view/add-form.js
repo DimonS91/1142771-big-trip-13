@@ -1,13 +1,11 @@
 import dayjs from "dayjs";
-import he from 'he';
 import SmartView from "../view/smart.js";
 import {typeUpdate, pointsUpdate, cityUpdate} from '../mock/trip-update.js';
 import flatpickr from 'flatpickr';
 
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
-
-const createEditForm = (data) => {
+export const createNewForm = (data) => {
   const {point, city, description, startEvent, endEvent, price, offer, photos} = data;
   const renderOffers = offer.map(({title, price, isChecked}) => {
     return `
@@ -20,6 +18,7 @@ const createEditForm = (data) => {
     </label>
   </div>`;
   }).join(``);
+
 
   const renderPhotos = (imageArr) => {
     return `<div class="event__photos-container">
@@ -38,8 +37,7 @@ const createEditForm = (data) => {
   };
 
   return `
-  <li class="trip-events__item">
-              <form class="event event--edit" action="#" method="post">
+  <form class="event event--edit" action="#" method="post">
                 <header class="event__header">
                   <div class="event__type-wrapper">
                     <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -81,20 +79,17 @@ const createEditForm = (data) => {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(String(price))}">
+                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-                  <button class="event__reset-btn" type="reset">Delete</button>
-                  <button class="event__rollup-btn" type="button">
-                    <span class="visually-hidden">Open event</span>
-                  </button>
+                  <button class="event__reset-btn" type="reset">Cancel</button>
                 </header>
                 <section class="event__details">
                   <section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
                     <div class="event__available-offers">
-                      ${renderOffers}
+                    ${renderOffers}
                     </div>
                   </section>
 
@@ -105,14 +100,13 @@ const createEditForm = (data) => {
                   </section>
                 </section>
               </form>
-            </li>
   `;
 };
 
-export default class EditForm extends SmartView {
+export default class AddForm extends SmartView {
   constructor(data) {
     super();
-    this._data = EditForm.parseEventToData(data);
+    this._data = AddForm.parseEventToData(data);
     this._datepicker = null;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
@@ -131,12 +125,12 @@ export default class EditForm extends SmartView {
 
   reset(data) {
     this.updateData(
-      EditForm.parseEventToData(data)
+      AddForm.parseEventToData(data)
     );
   }
 
   getTemplate() {
-    return createEditForm(EditForm.parseEventToData(this._data));
+    return createNewForm(AddForm.parseEventToData(this._data));
   }
 
   _setDatepicker() {
@@ -195,15 +189,14 @@ export default class EditForm extends SmartView {
   }
 
   _startEventDateChangeHandler([userDate]) {
-
     this.updateData({
-      startEvent: dayjs(userDate).hour(Math.random() * 23).minute(Math.random() * 59).second(Math.random() * 59).toDate()
+      startEvent: dayjs(userDate).hour(23).minute(59).second(59).toDate()
     });
   }
 
   _endEventDateChangeHandler([userDate]) {
     this.updateData({
-      endEvent: dayjs(userDate).hour(Math.random() * 23).minute(Math.random() * 59).second(Math.random() * 59).toDate()
+      endEvent: dayjs(userDate).hour(23).minute(59).second(59).toDate()
     });
   }
 
@@ -242,7 +235,7 @@ export default class EditForm extends SmartView {
   //         [evt.target.value]: Object.assign(
   //           {},
   //           this._data.offer[evt.target.value],
-  //           { isChecked: evt.target.checked }
+  //           {isChecked: evt.target.checked}
   //         )
   //       }
   //     )
@@ -253,7 +246,7 @@ export default class EditForm extends SmartView {
   _formSubmitHandler(evt) {
     evt.preventDefault();
 
-    this._callback.formSubmit(EditForm.parseDataToEvent(this._data));
+    this._callback.formSubmit(AddForm.parseDataToEvent(this._data));
   }
 
   setFormSubmitHandler(callback) {
@@ -272,7 +265,7 @@ export default class EditForm extends SmartView {
       {},
       data,
       {
-        isOffers: data.offer.length > 0,
+        isOffer: data.offer.length > 0,
         isPhotos: data.photos.length > 0
       }
     );
@@ -289,7 +282,7 @@ export default class EditForm extends SmartView {
 
   _formDeleteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.deleteClick(EditForm.parseDataToEvent(this._data));
+    this._callback.deleteClick(AddForm.parseDataToEvent(this._data));
   }
 
   setDeleteClickHandler(callback) {

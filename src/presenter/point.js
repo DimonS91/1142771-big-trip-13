@@ -1,6 +1,8 @@
 import WaypointsView from '../view/waypoint';
 import EditFormView from '../view/edit-form';
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
+import {UserAction, UpdateType} from "../utils/util.js";
+
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -9,9 +11,10 @@ const Mode = {
 
 export default class Point {
   constructor(pointListContainer, changeData, changeMode) {
+    this._pointListContainer = pointListContainer;
+
     this._data = null;
 
-    this._pointListContainer = pointListContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
 
@@ -21,6 +24,7 @@ export default class Point {
 
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
@@ -37,6 +41,7 @@ export default class Point {
     this._eventComponent.setEditClickHandler(this._handleEditClick);
     this._eventEditComponent.setEditClickHandler(this._handleEditClick);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
     this._eventComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
@@ -83,6 +88,7 @@ export default class Point {
   _escKeyDownHandler(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
+      this._eventEditComponent.reset(this._data);
       this._replaceEditPointToPoint();
     }
   }
@@ -93,6 +99,8 @@ export default class Point {
 
   _handleFavoriteClick() {
     this._changeData(
+        UserAction.UPDATE_POINT,
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._data,
@@ -103,7 +111,23 @@ export default class Point {
     );
   }
 
-  _handleFormSubmit() {
+  _handleFormSubmit(update) {
+
+    this._changeData(
+        UserAction.UPDATE_POINT,
+        UpdateType.MINOR,
+        update
+    );
     this._replaceEditPointToPoint();
   }
+
+  _handleDeleteClick(data) {
+    this._changeData(
+        UserAction.DELETE_POINT,
+        UpdateType.MINOR,
+        data
+    );
+
+  }
 }
+
