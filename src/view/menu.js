@@ -41,7 +41,7 @@ export default class AppMenu extends AbstractView {
     const currentActiveItem = this.getElement().querySelector(`.trip-tabs__btn--active`);
     currentActiveItem.classList.remove(`trip-tabs__btn--active`);
 
-    const item = this.getElement().querySelector(`[data-value=${menuButton}]`);
+    const item = this.getElement().querySelector(`[data-value=${menuButton.toUpperCase()}]`);
 
     if (item !== null) {
       item.classList.add(`trip-tabs__btn--active`);

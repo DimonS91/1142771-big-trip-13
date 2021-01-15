@@ -40,10 +40,10 @@ export default class Trip {
     this._filterModel.addObserver(this._handleModelEvent);
   }
 
-  createEvent() {
+  createEvent(callback) {
     this._currentSortType = SortType.DAY;
     this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this._newPointPresenter.init();
+    this._newPointPresenter.init(callback);
   }
 
   destroy() {

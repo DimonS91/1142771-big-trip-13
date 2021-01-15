@@ -3,6 +3,7 @@ import he from 'he';
 import SmartView from "../view/smart.js";
 import {typeUpdate, pointsUpdate, cityUpdate} from '../mock/trip-update.js';
 import flatpickr from 'flatpickr';
+import {newEvent} from '../utils/util';
 
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
@@ -112,7 +113,7 @@ const createEditForm = (data) => {
 export default class EditForm extends SmartView {
   constructor(data) {
     super();
-    this._data = EditForm.parseEventToData(data);
+    this._data = data || newEvent;
     this._datepicker = null;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
@@ -131,7 +132,7 @@ export default class EditForm extends SmartView {
 
   reset(data) {
     this.updateData(
-      EditForm.parseEventToData(data)
+        EditForm.parseEventToData(data)
     );
   }
 
@@ -228,9 +229,9 @@ export default class EditForm extends SmartView {
   _priceChangeHandler(evt) {
     evt.preventDefault();
     this.updateData(
-      {
-        price: evt.target.value,
-      }, true);
+        {
+          price: evt.target.value,
+        }, true);
   }
 
   // _offerChangeHandler(evt) {
@@ -252,12 +253,12 @@ export default class EditForm extends SmartView {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-
     this._callback.formSubmit(EditForm.parseDataToEvent(this._data));
   }
 
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
+    document.querySelector(`.trip-main__event-add-btn`).disabled = false;
     this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
   }
 
@@ -269,12 +270,12 @@ export default class EditForm extends SmartView {
 
   static parseEventToData(data) {
     return Object.assign(
-      {},
-      data,
-      {
-        isOffers: data.offer.length > 0,
-        isPhotos: data.photos.length > 0
-      }
+        {},
+        data,
+        {
+          isOffers: data.offer.length > 0,
+          isPhotos: data.photos.length > 0
+        }
     );
   }
 

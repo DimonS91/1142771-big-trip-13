@@ -41,8 +41,8 @@ const renderMoneyChart = (moneyCtx, events) => {
       labels: uniqTypes,
       datasets: [{
         data: moneyByTypes,
-        backgroundColor: `#ffffff`,
-        hoverBackgroundColor: `#ffffff`,
+        backgroundColor: `#2E9AFF`,
+        hoverBackgroundColor: `#2EAEFF`,
         anchor: `start`
       }]
     },
@@ -52,7 +52,7 @@ const renderMoneyChart = (moneyCtx, events) => {
           font: {
             size: 13
           },
-          color: `#000000`,
+          color: `#ffffff`,
           anchor: `end`,
           align: `start`,
           formatter: (val) => `€ ${val}`
@@ -115,8 +115,8 @@ const renderTypeChart = (typeCtx, events) => {
       labels: uniqTypes,
       datasets: [{
         data: countsByTypes,
-        backgroundColor: `#ffffff`,
-        hoverBackgroundColor: `#ffffff`,
+        backgroundColor: `#2E9AFF`,
+        hoverBackgroundColor: `#2EAEFF`,
         anchor: `start`
       }]
     },
@@ -126,7 +126,7 @@ const renderTypeChart = (typeCtx, events) => {
           font: {
             size: 13
           },
-          color: `#000000`,
+          color: `#ffffff`,
           anchor: `end`,
           align: `start`,
           formatter: (val) => `${val}x`
@@ -189,8 +189,8 @@ const renderTimeChart = (timeCtx, events) => {
       labels: uniqTypes,
       datasets: [{
         data: durationsByTypes,
-        backgroundColor: `#ffffff`,
-        hoverBackgroundColor: `#ffffff`,
+        backgroundColor: `#2E9AFF`,
+        hoverBackgroundColor: `#2EAEFF`,
         anchor: `start`
       }]
     },
@@ -200,7 +200,7 @@ const renderTimeChart = (timeCtx, events) => {
           font: {
             size: 13
           },
-          color: `#000000`,
+          color: `#ffffff`,
           anchor: `end`,
           align: `start`,
           formatter: (val) => `${val}D`

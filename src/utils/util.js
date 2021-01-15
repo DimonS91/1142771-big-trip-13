@@ -1,3 +1,6 @@
+import {generateDate} from './time';
+
+
 export const getRandomInteger = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
@@ -27,6 +30,22 @@ export const FilterType = {
 };
 
 export const MenuButtons = {
+  ADD_NEW_EVENT: `ADD_NEW_EVENT`,
   TABLE: `TABLE`,
   STATS: `STATS`,
+};
+
+const startEvent = generateDate();
+const endEvent = generateDate();
+
+export const newEvent = {
+  point: `Bus`,
+  city: ``,
+  offer: [],
+  startEvent: Math.min(startEvent, endEvent),
+  endEvent: Math.max(startEvent, endEvent),
+  price: 0,
+  description: ``,
+  photos: [],
+  isFavorite: false
 };

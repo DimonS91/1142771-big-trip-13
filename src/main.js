@@ -1,5 +1,5 @@
 import {data} from './mock/mock';
-import {MenuButtons, UpdateType, FilterType} from './utils/util'
+import {MenuButtons} from './utils/util';
 import TripPresenter from './presenter/trip.js';
 import FilterPresenter from "./presenter/filter.js";
 import AppMenuView from './view/menu.js';
@@ -8,6 +8,7 @@ import {render, RenderPosition, remove} from './utils/render.js';
 import PointsModel from "./model/points.js";
 import FilterModel from "./model/filter.js";
 import StatsView from './view/stats';
+import NewEventBtnView from './view/btn-new-event';
 
 const pointsModel = new PointsModel();
 pointsModel.setPoints(data);
@@ -22,11 +23,12 @@ const tripEvents = document.querySelector(`.trip-events`);
 const tripPresenter = new TripPresenter(tripEvents, pointsModel, filterModel);
 const filterPresenter = new FilterPresenter(tripControls, filterModel);
 const appMenuComponent = new AppMenuView();
+const newEventBtnComponent = new NewEventBtnView();
 
 let statsComponent = null;
 
 const handleSiteButtonClick = (menuButton) => {
-  switch (menuButton) {
+  switch (menuButton.toUpperCase()) {
     case MenuButtons.TABLE:
       tripPresenter.init();
       remove(statsComponent);
@@ -42,6 +44,7 @@ const handleSiteButtonClick = (menuButton) => {
 appMenuComponent.setMenuClickHandler(handleSiteButtonClick);
 render(tripMain, new RouteAndPriceView(pointsModel.getPoints()), RenderPosition.AFTERBEGIN);
 render(tripControls, appMenuComponent, RenderPosition.AFTERBEGIN);
+render(tripMain, newEventBtnComponent, RenderPosition.BEFOREEND);
 
 
 filterPresenter.init();
@@ -49,5 +52,11 @@ tripPresenter.init();
 
 document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
   evt.preventDefault();
-  tripPresenter.createEvent();
+  remove(statsComponent);
+  appMenuComponent.setMenuItem(MenuButtons.TABLE);
+  tripPresenter.init();
+  tripPresenter.createEvent(() => {
+    evt.target.disabled = false;
+  });
+  evt.target.disabled = true;
 });
