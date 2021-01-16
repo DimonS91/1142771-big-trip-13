@@ -1,3 +1,6 @@
+import {generateDate} from './time';
+
+
 export const getRandomInteger = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
@@ -8,16 +11,41 @@ export const getRandomElements = (arr) => {
 
 export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
+export const UserAction = {
+  UPDATE_POINT: `UPDATE_POINT`,
+  ADD_POINT: `ADD_POINT`,
+  DELETE_POINT: `DELETE_POINT`
+};
 
-  if (index === -1) {
-    return items;
-  }
+export const UpdateType = {
+  PATCH: `PATCH`,
+  MINOR: `MINOR`,
+  MAJOR: `MAJOR`
+};
 
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1)
-  ];
+export const FilterType = {
+  EVERYTHING: `everything`,
+  FUTURE: `future`,
+  PAST: `past`
+};
+
+export const MenuButtons = {
+  ADD_NEW_EVENT: `ADD_NEW_EVENT`,
+  TABLE: `TABLE`,
+  STATS: `STATS`,
+};
+
+const startEvent = generateDate();
+const endEvent = generateDate();
+
+export const newEvent = {
+  point: `Bus`,
+  city: ``,
+  offer: [],
+  startEvent: Math.min(startEvent, endEvent),
+  endEvent: Math.max(startEvent, endEvent),
+  price: 0,
+  description: ``,
+  photos: [],
+  isFavorite: false
 };

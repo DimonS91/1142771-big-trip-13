@@ -1,15 +1,20 @@
 import dayjs from "dayjs";
+import he from 'he';
 import SmartView from "../view/smart.js";
 import {typeUpdate, pointsUpdate, cityUpdate} from '../mock/trip-update.js';
+import flatpickr from 'flatpickr';
+import {newEvent} from '../utils/util';
+
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
+
 
 const createEditForm = (data) => {
   const {point, city, description, startEvent, endEvent, price, offer, photos} = data;
-
   const renderOffers = offer.map(({title, price, isChecked}) => {
     return `
     <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}-1" type="checkbox" name="event-offer-luggage" ${isChecked ? `checked` : ``}>
-    <label class="event__offer-label" for="event-offer-${title}-1">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}" type="checkbox" name="event-offer-${title}}" ${isChecked ? `checked` : ``}">
+    <label class="event__offer-label" for="event-offer-${title}">
       <span class="event__offer-title">${title}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${price}</span>
@@ -30,8 +35,7 @@ const createEditForm = (data) => {
     <div class="event__type-item">
         <input id="event-type-${type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.toLowerCase()}" ${isChecked ? ` checked` : ``}>
         <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.toLowerCase()}-1">${type}</label>
-      </div>`
-    ;
+      </div>`;
   };
 
   return `
@@ -78,7 +82,7 @@ const createEditForm = (data) => {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(String(price))}">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -109,18 +113,60 @@ const createEditForm = (data) => {
 export default class EditForm extends SmartView {
   constructor(data) {
     super();
-    this._data = data;
+    this._data = data || newEvent;
+    this._datepicker = null;
+
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
 
     this._typeToggleHandler = this._typeToggleHandler.bind(this);
+    this._startEventDateChangeHandler = this._startEventDateChangeHandler.bind(this);
+    this._endEventDateChangeHandler = this._endEventDateChangeHandler.bind(this);
     this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
     this._priceChangeHandler = this._priceChangeHandler.bind(this);
+    // this._offerChangeHandler = this._offerChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setDatepicker();
+  }
+
+  reset(data) {
+    this.updateData(
+        EditForm.parseEventToData(data)
+    );
   }
 
   getTemplate() {
     return createEditForm(EditForm.parseEventToData(this._data));
+  }
+
+  _setDatepicker() {
+    if (this._datepicker) {
+      this._datepicker.destroy();
+      this._datepicker = null;
+    }
+
+    if (this._data.startEvent) {
+      this._datepicker = flatpickr(
+          this.getElement().querySelector(`#event-start-time-1`),
+          {
+            dateFormat: `d/m/Y H:i`,
+            defaultDate: this._data.startEvent,
+            onChange: this._startEventDateChangeHandler
+          }
+      );
+    }
+
+    if (this._data.endEvent) {
+      this._datepicker = flatpickr(
+          this.getElement().querySelector(`#event-end-time-1`),
+          {
+            dateFormat: `d/m/Y H:i`,
+            defaultDate: this._data.endEvent,
+            onChange: this._endEventDateChangeHandler
+          }
+      );
+    }
   }
 
   _setInnerHandlers() {
@@ -135,12 +181,31 @@ export default class EditForm extends SmartView {
     this.getElement()
       .querySelector(`.event__input--price`)
       .addEventListener(`change`, this._priceChangeHandler);
+
+    // this.getElement()
+    //   .querySelector(`.event__offer-checkbox`)
+    //   .addEventListener(`change`, this._offerChangeHandler);
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this._setDatepicker();
     this.setEditClickHandler(this._callback.editClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
+  }
+
+  _startEventDateChangeHandler([userDate]) {
+
+    this.updateData({
+      startEvent: dayjs(userDate).hour(Math.random() * 23).minute(Math.random() * 59).second(Math.random() * 59).toDate()
+    });
+  }
+
+  _endEventDateChangeHandler([userDate]) {
+    this.updateData({
+      endEvent: dayjs(userDate).hour(Math.random() * 23).minute(Math.random() * 59).second(Math.random() * 59).toDate()
+    });
   }
 
   _typeToggleHandler(evt) {
@@ -169,6 +234,23 @@ export default class EditForm extends SmartView {
         }, true);
   }
 
+  // _offerChangeHandler(evt) {
+  //   this.updateData({
+  //     offer: Object.assign(
+  //       {},
+  //       this._data.offer,
+  //       {
+  //         [evt.target.value]: Object.assign(
+  //           {},
+  //           this._data.offer[evt.target.value],
+  //           { isChecked: evt.target.checked }
+  //         )
+  //       }
+  //     )
+  //   }
+  //   );
+  // }
+
   _formSubmitHandler(evt) {
     evt.preventDefault();
     this._callback.formSubmit(EditForm.parseDataToEvent(this._data));
@@ -176,6 +258,7 @@ export default class EditForm extends SmartView {
 
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
+    document.querySelector(`.trip-main__event-add-btn`).disabled = false;
     this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
   }
 
@@ -204,4 +287,15 @@ export default class EditForm extends SmartView {
 
     return data;
   }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(EditForm.parseDataToEvent(this._data));
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
+  }
+
 }

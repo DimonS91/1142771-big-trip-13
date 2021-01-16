@@ -23,7 +23,8 @@ const generateRandomPoints = () => {
 export const createCity = [
   `Amsterdam`,
   `Chamonix`,
-  `Geneva`
+  `Geneva`,
+  `New York`
 ];
 
 const generateRandomCity = () => {
