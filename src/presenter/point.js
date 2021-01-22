@@ -17,7 +17,6 @@ export default class Point {
 
     this._changeData = changeData;
     this._changeMode = changeMode;
-
     this._eventComponent = null;
     this._eventEditComponent = null;
     this._mode = Mode.DEFAULT;

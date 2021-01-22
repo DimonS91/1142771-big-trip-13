@@ -1,13 +1,17 @@
+/* eslint-disable camelcase */
 import Observer from "../utils/observer.js";
 
 export default class Points extends Observer {
   constructor() {
     super();
     this._data = [];
+    this._destinations = [];
+    this._offers = [];
   }
 
-  setPoints(data) {
+  setPoints(updateType, data) {
     this._data = data.slice();
+    this._notify(updateType);
   }
 
   getPoints() {
@@ -53,4 +57,59 @@ export default class Points extends Observer {
 
     this._notify(updateType);
   }
+
+  static adaptToClient(data) {
+    const adaptedPoint = Object.assign(
+        {},
+        data,
+        {
+          point: data.type,
+          city: data.destination.name,
+          startEvent: data.date_from,
+          endEvent: data.date_to,
+          price: data.base_price,
+          description: data.destination.description,
+          photos: data.destination.pictures,
+          isFavorite: data.is_favorite
+        }
+    );
+
+    delete adaptedPoint.base_price;
+    delete adaptedPoint.date_from;
+    delete adaptedPoint.date_to;
+    delete adaptedPoint.destination;
+    delete adaptedPoint.is_favorite;
+    delete adaptedPoint.offers;
+    delete adaptedPoint.type;
+
+    return adaptedPoint;
+  }
+
+  static adaptToServer(data) {
+    const adaptedPoint = Object.assign(
+        {},
+        data,
+        {
+          base_price: data.price,
+          date_from: data.startEvent,
+          date_to: data.endEvent,
+          destination: {
+            description: data.description,
+            name: data.city,
+            pictures: data.photos,
+          },
+          is_favorite: data.isFavorite,
+          type: data.point
+        }
+    );
+
+    delete adaptedPoint.price;
+    delete adaptedPoint.times;
+    delete adaptedPoint.description;
+    delete adaptedPoint.isFavorite;
+
+    return adaptedPoint;
+  }
+
 }
+

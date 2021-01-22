@@ -10,6 +10,7 @@ import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const createEditForm = (data) => {
   const {point, city, description, startEvent, endEvent, price, offer, photos} = data;
+  // eslint-disable-next-line no-shadow
   const renderOffers = offer.map(({title, price, isChecked}) => {
     return `
     <div class="event__offer-selector">
