@@ -4,25 +4,34 @@ import SmartView from "../view/smart.js";
 import {typeUpdate, pointsUpdate, cityUpdate} from '../mock/trip-update.js';
 import flatpickr from 'flatpickr';
 import {newEvent} from '../utils/util';
+import Store from '../store';
 
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
+const renderOffers = (offers, type) => {
 
-const createEditForm = (data) => {
-  const {point, city, description, startEvent, endEvent, price, offer, photos} = data;
-  // eslint-disable-next-line no-shadow
-  const renderOffers = offer.map(({title, price, isChecked}) => {
+  const actualOffers = Store.getOffers().find((offer) => offer.type === type);
+    console.log(actualOffers.offers)
+
+  actualOffers.offers.map(({title, price}) => {
+    const offersType = title.split(` `).join(`-`);
+    console.log(offersType)
+    const isCheckedOffer = offers.find((offer) => offer.title === title) ? `checked` : ``;
     return `
     <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}" type="checkbox" name="event-offer-${title}}" ${isChecked ? `checked` : ``}">
-    <label class="event__offer-label" for="event-offer-${title}">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offersType}" type="checkbox" name="event-offer-${offersType}}" ${isCheckedOffer}">
+    <label class="event__offer-label" for="event-offer-${offersType}">
       <span class="event__offer-title">${title}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${price}</span>
     </label>
   </div>`;
   }).join(``);
+};
 
+const createEditForm = (data) => {
+  const {point, city, description, startEvent, endEvent, offer, price, photos} = data;
+  // eslint-disable-next-line no-shadow
   const renderPhotos = (imageArr) => {
     return `<div class="event__photos-container">
     <div class="event__photos-tape">
@@ -32,11 +41,11 @@ const createEditForm = (data) => {
   };
 
   const renderEventPoint = (type, isChecked) => {
-    return `
-    <div class="event__type-item">
-        <input id="event-type-${type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.toLowerCase()}" ${isChecked ? ` checked` : ``}>
-        <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.toLowerCase()}-1">${type}</label>
-      </div>`;
+      return `
+      <div class="event__type-item">
+          <input id="event-type-${type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.toLowerCase()}" ${isChecked ? ` checked` : ``}>
+          <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.toLowerCase()}-1">${type}</label>
+        </div>`;
   };
 
   return `
@@ -96,7 +105,7 @@ const createEditForm = (data) => {
                   <section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
                     <div class="event__available-offers">
-                      ${renderOffers}
+                      ${renderOffers(offer, point)}
                     </div>
                   </section>
 
@@ -114,9 +123,8 @@ const createEditForm = (data) => {
 export default class EditForm extends SmartView {
   constructor(data) {
     super();
-    this._data = data || newEvent;
+    this._data = EditForm.parseEventToData(data) || newEvent;
     this._datepicker = null;
-
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
 
@@ -138,7 +146,7 @@ export default class EditForm extends SmartView {
   }
 
   getTemplate() {
-    return createEditForm(EditForm.parseEventToData(this._data));
+    return createEditForm(EditForm.parseEventToData(this._data, this._destination, this._offers));
   }
 
   _setDatepicker() {
@@ -213,7 +221,7 @@ export default class EditForm extends SmartView {
     evt.preventDefault();
     this.updateData({
       point: evt.target.textContent,
-      offer: typeUpdate[evt.target.textContent]
+      offer: [typeUpdate[evt.target.textContent]]
     });
   }
 
@@ -274,8 +282,8 @@ export default class EditForm extends SmartView {
         {},
         data,
         {
-          isOffers: data.offer.length > 0,
-          isPhotos: data.photos.length > 0
+          // isOffers: data.offer.length > 0,
+          // isPhotos: data.photos.length > 0
         }
     );
   }
@@ -283,7 +291,7 @@ export default class EditForm extends SmartView {
   static parseDataToEvent(data) {
     data = Object.assign({}, data);
 
-    delete data.isOffers;
+    // delete data.isOffers;
     delete data.isPhotos;
 
     return data;

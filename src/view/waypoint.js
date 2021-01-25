@@ -25,6 +25,7 @@ const createWaypoints = (data) => {
 
   const offersTemplate = offer === null ? `` : renderOffers(offer);
 
+
   return `
   <li class="trip-events__item">
     <div class="event">

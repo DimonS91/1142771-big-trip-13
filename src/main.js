@@ -71,7 +71,8 @@ Promise.all([api.getPoints(), api.getOffers(), api.getDestinations()])
   pointsModel.setPoints(UpdateType.INIT, events);
   render(tripControls, appMenuComponent, RenderPosition.AFTERBEGIN);
   appMenuComponent.setMenuClickHandler(handleSiteButtonClick);
-}).catch(() => {
+}).catch((err) => {
+  console.log(err)
   pointsModel.setPoints(UpdateType.INIT, []);
   render(tripControls, appMenuComponent, RenderPosition.AFTERBEGIN);
   appMenuComponent.setMenuClickHandler(handleSiteButtonClick);
